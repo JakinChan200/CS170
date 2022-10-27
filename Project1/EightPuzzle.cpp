@@ -6,14 +6,16 @@
 
 using namespace std;
 
-vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 7, 8, 0}, //0
-                                {1, 2, 3, 4, 5, 6, 0, 7, 8}, //2
-                                {1, 2, 3, 5, 0, 6, 4, 7, 8}, //4
-                                {1, 3, 6, 5, 0, 2, 4, 7, 8}, //8
-                                {1, 3, 6, 5, 0, 7, 4, 8, 2}, //12
-                                {1, 6, 7, 5, 0, 3, 4, 8, 2}, //16
-                                {7, 1, 2, 4, 8, 5, 6, 3, 0}, //20
-                                {0, 7, 2, 4, 6, 1, 3, 5, 8}}; //24
+// vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 7, 8, 0}, //0
+//                                 {1, 2, 3, 4, 5, 6, 0, 7, 8}, //2
+//                                 {1, 2, 3, 5, 0, 6, 4, 7, 8}, //4
+//                                 {1, 3, 6, 5, 0, 2, 4, 7, 8}, //8
+//                                 {1, 3, 6, 5, 0, 7, 4, 8, 2}, //12
+//                                 {1, 6, 7, 5, 0, 3, 4, 8, 2}, //16
+//                                 {7, 1, 2, 4, 8, 5, 6, 3, 0}, //20
+//                                 {0, 7, 2, 4, 6, 1, 3, 5, 8}}; //24
+
+vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 0, 7, 8}};
 
 
 struct node{
@@ -37,12 +39,9 @@ void printPuzzle(vector<vector<int>> problem){
 }
 
 bool checkComplete(node puzzle){
-    int counter = 1;
     for(int i = 0; i < puzzle.state.size(); i++){
         for(int k = 0; k < puzzle.state[i].size(); k++){
-            if(((3*i+k+1) %(puzzle.state.size()*puzzle.state[0].size())) == puzzle.state[puzzle.state.size()][puzzle.state[i].size()]){
-                counter++;
-            }else{
+            if(!(((3*i+k+1) %9) == puzzle.state[i][k])){
                 return false;
             }
         }
@@ -55,6 +54,7 @@ node swapValues(node puzzle, int tileRow, int tileCol, string step){
     puzzle.state[tileRow][tileCol] = 0;
     puzzle.zeroRow = tileRow;
     puzzle.zeroCol = tileCol;
+    puzzle.depth++;
     puzzle.path.push_back(step);
     return puzzle;
 }
@@ -123,11 +123,18 @@ int main(int argc, char** argv){
             problem.push_back(row);
         }
 
-        cout << "=================================================" << endl;
-        printPuzzle(problem);
+        //node heh = buildNode(problem);
+        //printPuzzle(heh.state);
 
+        // cout << "=================================================" << endl;
+        // printPuzzle(problem);
+
+        printPuzzle(problem);
         node sol = buildTree(problem);
         if(sol.solution){
+            cout << "Solution:" << endl;
+            cout << "Depth: " << sol.depth << endl;
+            cout << "Path: ";
             for(int k = 0; k < sol.path.size(); k++){
                 cout << sol.path[k] << " ";
             }
@@ -135,6 +142,7 @@ int main(int argc, char** argv){
         }else{
             cout << "No Solution" << endl;
         }
+        cout << "done" << endl;
     }
 
     return 0;
