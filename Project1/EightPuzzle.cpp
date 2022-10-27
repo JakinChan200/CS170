@@ -17,7 +17,6 @@ vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 7, 8, 0}, //0
 
 //vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 0, 7, 8}};
 
-
 struct node{
     vector<vector<int>> state;
     int zeroRow;
@@ -50,6 +49,25 @@ bool checkComplete(node &puzzle){
     return true;
 }
 
+bool checkDuplicate(node &puzzle, vector<vector<int>> &table){
+    int temp = 0;
+    int firstDigit = puzzle.state[0][0];
+    for(int i = 0; i < puzzle.state.size(); i++){
+        for(int k = 0; k < puzzle.state[i].size(); k++){
+            temp *= 10;
+            temp += puzzle.state[i][k];
+        }
+    }
+
+    for(int i = 0; i < table[firstDigit].size(); i++){
+        if(temp == table[firstDigit][i]){
+            return true;
+        }
+    }
+    table[firstDigit].push_back(temp);
+    return false;
+}
+
 node swapValues(node puzzle, int tileRow, int tileCol, string step){
     puzzle.state[puzzle.zeroRow][puzzle.zeroCol] = puzzle.state[tileRow][tileCol];
     puzzle.state[tileRow][tileCol] = 0;
@@ -80,9 +98,11 @@ node buildTree(vector<vector<int>> puzzle){
     queue<node> tree;
     tree.push(buildNode(puzzle));
     node puzzleTop = tree.front();
-    if(checkComplete(puzzleTop)){
-        return puzzleTop;
-    }
+    node temp;
+    vector<vector<int>> table(puzzle.size()*puzzle[0].size(), vector<int>(0));
+    if(checkComplete(puzzleTop)) return puzzleTop;
+    checkDuplicate(puzzleTop, table);
+    
     int row;
     int col;
 
@@ -94,21 +114,45 @@ node buildTree(vector<vector<int>> puzzle){
         col = puzzleTop.zeroCol;
 
         if(row != 0){
-            tree.push(swapValues(puzzleTop, row-1, col, "up"));
-            if(checkComplete(tree.back())) return tree.back();
+            temp = swapValues(puzzleTop, row-1, col, "up");
+            if(!checkDuplicate(temp, table)){
+                if(checkComplete(tree.back())){
+                    return tree.back();
+                }else{
+                    tree.push(temp);
+                }
+            }
         }
         if(row != puzzle.size()-1){
-            tree.push(swapValues(puzzleTop, row+1, col, "down"));
-            if(checkComplete(tree.back())) return tree.back();
+            temp = swapValues(puzzleTop, row+1, col, "down");
+            if(!checkDuplicate(temp, table)){
+                if(checkComplete(tree.back())){
+                    return tree.back();
+                }else{
+                    tree.push(temp);
+                }
+            }
         }
 
         if(col != 0){
-            tree.push(swapValues(puzzleTop, row, col-1, "left"));
-            if(checkComplete(tree.back())) return tree.back();
+            temp = swapValues(puzzleTop, row, col-1, "left");
+            if(!checkDuplicate(temp, table)){
+                if(checkComplete(tree.back())){
+                    return tree.back();
+                }else{
+                    tree.push(temp);
+                }
+            }
         }
         if(col != puzzle[row].size()-1){
-            tree.push(swapValues(puzzleTop, row, col+1, "right"));
-            if(checkComplete(tree.back())) return tree.back();
+            temp = swapValues(puzzleTop, row, col+1, "right");
+            if(!checkDuplicate(temp, table)){
+                if(checkComplete(tree.back())){
+                    return tree.back();
+                }else{
+                    tree.push(temp);
+                }
+            }
         }
     }
     return puzzleTop;
