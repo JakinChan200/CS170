@@ -6,16 +6,16 @@
 
 using namespace std;
 
-// vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 7, 8, 0}, //0
-//                                 {1, 2, 3, 4, 5, 6, 0, 7, 8}, //2
-//                                 {1, 2, 3, 5, 0, 6, 4, 7, 8}, //4
-//                                 {1, 3, 6, 5, 0, 2, 4, 7, 8}, //8
-//                                 {1, 3, 6, 5, 0, 7, 4, 8, 2}, //12
-//                                 {1, 6, 7, 5, 0, 3, 4, 8, 2}, //16
-//                                 {7, 1, 2, 4, 8, 5, 6, 3, 0}, //20
-//                                 {0, 7, 2, 4, 6, 1, 3, 5, 8}}; //24
+vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 7, 8, 0}, //0
+                                {1, 2, 3, 4, 5, 6, 0, 7, 8}, //2
+                                {1, 2, 3, 5, 0, 6, 4, 7, 8}, //4
+                                {1, 3, 6, 5, 0, 2, 4, 7, 8}, //8
+                                {1, 3, 6, 5, 0, 7, 4, 8, 2}, //12
+                                {1, 6, 7, 5, 0, 3, 4, 8, 2}, //16
+                                {7, 1, 2, 4, 8, 5, 6, 3, 0}, //20
+                                {0, 7, 2, 4, 6, 1, 3, 5, 8}}; //24
 
-vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 0, 7, 8}};
+//vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 0, 7, 8}};
 
 
 struct node{
@@ -38,7 +38,7 @@ void printPuzzle(vector<vector<int>> problem){
     return;
 }
 
-bool checkComplete(node puzzle){
+bool checkComplete(node &puzzle){
     for(int i = 0; i < puzzle.state.size(); i++){
         for(int k = 0; k < puzzle.state[i].size(); k++){
             if(!(((3*i+k+1) %9) == puzzle.state[i][k])){
@@ -46,6 +46,7 @@ bool checkComplete(node puzzle){
             }
         }
     }
+    puzzle.solution = true;
     return true;
 }
 
@@ -78,37 +79,36 @@ node buildTree(vector<vector<int>> puzzle){
 
     queue<node> tree;
     tree.push(buildNode(puzzle));
+    node puzzleTop = tree.front();
+    if(checkComplete(puzzleTop)){
+        return puzzleTop;
+    }
     int row;
     int col;
 
-    node puzzleTop;
     while(!tree.empty()){
         puzzleTop = tree.front();
-        if(checkComplete(puzzleTop)){
-            puzzleTop.solution = true;
-            return puzzleTop;
-        }
         tree.pop();
 
         row = puzzleTop.zeroRow;
         col = puzzleTop.zeroCol;
 
-        if(row == 0){
-            tree.push(swapValues(puzzleTop, row+1, col, "dowm"));
-        }else if(row == puzzle.size()-1){
+        if(row != 0){
             tree.push(swapValues(puzzleTop, row-1, col, "up"));
-        }else{
-            tree.push(swapValues(puzzleTop, row-1, col, "up"));
+            if(checkComplete(tree.back())) return tree.back();
+        }
+        if(row != puzzle.size()-1){
             tree.push(swapValues(puzzleTop, row+1, col, "down"));
+            if(checkComplete(tree.back())) return tree.back();
         }
 
-        if(col == 0){
-            tree.push(swapValues(puzzleTop, row, col+1, "right"));
-        }else if(col == puzzle[row].size()-1){
+        if(col != 0){
             tree.push(swapValues(puzzleTop, row, col-1, "left"));
-        }else{
-            tree.push(swapValues(puzzleTop, row, col-1, "left"));
+            if(checkComplete(tree.back())) return tree.back();
+        }
+        if(col != puzzle[row].size()-1){
             tree.push(swapValues(puzzleTop, row, col+1, "right"));
+            if(checkComplete(tree.back())) return tree.back();
         }
     }
     return puzzleTop;
@@ -123,16 +123,12 @@ int main(int argc, char** argv){
             problem.push_back(row);
         }
 
-        //node heh = buildNode(problem);
-        //printPuzzle(heh.state);
-
-        // cout << "=================================================" << endl;
-        // printPuzzle(problem);
+        cout << "=================================================" << endl;
 
         printPuzzle(problem);
         node sol = buildTree(problem);
         if(sol.solution){
-            cout << "Solution:" << endl;
+            cout << "\nSolution:" << endl;
             cout << "Depth: " << sol.depth << endl;
             cout << "Path: ";
             for(int k = 0; k < sol.path.size(); k++){
@@ -142,7 +138,6 @@ int main(int argc, char** argv){
         }else{
             cout << "No Solution" << endl;
         }
-        cout << "done" << endl;
     }
 
     return 0;
