@@ -3,8 +3,12 @@
 #include <queue>
 #include <string>
 #include <set>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
+int queueCounter = 0;
+int expandedCounter = 0;
 
 vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 7, 8, 0}, //0
                                 {1, 2, 3, 4, 5, 6, 0, 7, 8}, //2
@@ -15,10 +19,13 @@ vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 7, 8, 0}, //0
                                 {7, 1, 2, 4, 8, 5, 6, 3, 0}, //20
                                 {0, 7, 2, 4, 6, 1, 3, 5, 8}}; //24
 
+//vector<vector<int>> problems = {{1, 2, 3, 5, 0, 6, 4, 7, 8}};
+
 struct node{
     vector<vector<int>> state;
     int zeroRow;
     int zeroCol;
+    int g = 0;
     vector<string> path;
     bool solution = false;
 };
@@ -35,9 +42,10 @@ void printPuzzle(vector<vector<int>> problem){
 }
 
 bool checkComplete(node &puzzle){
+    int dimension = puzzle.state.size() * puzzle.state[0].size();
     for(int i = 0; i < puzzle.state.size(); i++){
         for(int k = 0; k < puzzle.state[i].size(); k++){
-            if(!(((3*i+k+1) %9) == puzzle.state[i][k])){
+            if(!(((3*i+k+1) %dimension) == puzzle.state[i][k])){
                 return false;
             }
         }
@@ -64,6 +72,7 @@ node swapValues(node puzzle, int tileRow, int tileCol, string step){
 node buildNode(vector<vector<int>> state){
     node temp;
     temp.state = state;
+    int dimension = state.size() * state[0].size();
 
     for(int i = 0; i < state.size(); i++){
         for(int k = 0; k < state[i].size(); k++){
@@ -72,6 +81,9 @@ node buildNode(vector<vector<int>> state){
                 temp.zeroCol = k;
                 return temp;
             }
+            if(!(((3*i+k+1) %dimension) == state[i][k])){
+                temp.g++;
+            }
         }
     }
     return temp;
@@ -79,19 +91,24 @@ node buildNode(vector<vector<int>> state){
 
 node buildTree(vector<vector<int>> puzzle){
 
+    queueCounter = 0;
+    expandedCounter = 0;
     queue<node> tree;
+    set<vector<vector<int>>> table;
+    node temp;
+
     tree.push(buildNode(puzzle));
     node puzzleTop = tree.front();
-    node temp;
-    set<vector<vector<int>>> table;
     if(checkComplete(puzzleTop)) return puzzleTop;
 
     int row;
     int col;
 
     while(!tree.empty()){
+        if(queueCounter < tree.size()){queueCounter = tree.size();}
         puzzleTop = tree.front();
         tree.pop();
+        expandedCounter++;
 
         row = puzzleTop.zeroRow;
         col = puzzleTop.zeroCol;
@@ -99,8 +116,8 @@ node buildTree(vector<vector<int>> puzzle){
         if(row != 0){
             temp = swapValues(puzzleTop, row-1, col, "up");
             if(!checkDupe(temp, table)){
-                if(checkComplete(tree.back())){
-                    return tree.back();
+                if(checkComplete(temp)){
+                    return temp;
                 }else{
                     tree.push(temp);
                 }
@@ -109,8 +126,8 @@ node buildTree(vector<vector<int>> puzzle){
         if(row != puzzle.size()-1){
             temp = swapValues(puzzleTop, row+1, col, "down");
             if(!checkDupe(temp, table)){
-                if(checkComplete(tree.back())){
-                    return tree.back();
+                if(checkComplete(temp)){
+                    return temp;
                 }else{
                     tree.push(temp);
                 }
@@ -120,8 +137,8 @@ node buildTree(vector<vector<int>> puzzle){
         if(col != 0){
             temp = swapValues(puzzleTop, row, col-1, "left");
             if(!checkDupe(temp, table)){
-                if(checkComplete(tree.back())){
-                    return tree.back();
+                if(checkComplete(temp)){
+                    return temp;
                 }else{
                     tree.push(temp);
                 }
@@ -130,8 +147,8 @@ node buildTree(vector<vector<int>> puzzle){
         if(col != puzzle[row].size()-1){
             temp = swapValues(puzzleTop, row, col+1, "right");
             if(!checkDupe(temp, table)){
-                if(checkComplete(tree.back())){
-                    return tree.back();
+                if(checkComplete(temp)){
+                    return temp;
                 }else{
                     tree.push(temp);
                 }
@@ -153,7 +170,9 @@ int main(int argc, char** argv){
         cout << "=================================================" << endl;
 
         printPuzzle(problem);
+        auto start = high_resolution_clock::now();
         node sol = buildTree(problem);
+        auto stop = high_resolution_clock::now();
         if(sol.solution){
             cout << "\nSolution:" << endl;
             cout << "Depth: " << sol.path.size() << endl;
@@ -161,6 +180,9 @@ int main(int argc, char** argv){
             for(int k = 0; k < sol.path.size(); k++){
                 cout << sol.path[k] << " ";
             }
+            cout << "\nMax Queue Length: " << queueCounter << endl;
+            cout << "Nodes Expanded: " << expandedCounter << endl;
+            cout << "Time: " << duration_cast<milliseconds>(stop - start).count() << " milliseconds" << endl;
             cout << endl;
         }else{
             cout << "No Solution" << endl;
