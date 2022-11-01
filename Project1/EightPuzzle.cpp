@@ -19,7 +19,7 @@ vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 7, 8, 0}, //0
                                 {7, 1, 2, 4, 8, 5, 6, 3, 0}, //20
                                 {0, 7, 2, 4, 6, 1, 3, 5, 8}}; //24
 
-//vector<vector<int>> problems = {{1, 2, 3, 5, 0, 6, 4, 7, 8}};
+// vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 0, 7, 8}};
 
 struct node{
     vector<vector<int>> state;
@@ -27,7 +27,12 @@ struct node{
     int zeroCol;
     int g = 0;
     vector<string> path;
-    bool solution = false;
+};
+
+struct CompareG{
+    bool operator()(node &a, node &b){
+        return a.g > b.g;
+    }
 };
 
 void printPuzzle(vector<vector<int>> problem){
@@ -43,15 +48,15 @@ void printPuzzle(vector<vector<int>> problem){
 
 bool checkComplete(node &puzzle){
     int dimension = puzzle.state.size() * puzzle.state[0].size();
+    puzzle.g = 0;
     for(int i = 0; i < puzzle.state.size(); i++){
         for(int k = 0; k < puzzle.state[i].size(); k++){
             if(!(((3*i+k+1) %dimension) == puzzle.state[i][k])){
-                return false;
+                puzzle.g++;
             }
         }
     }
-    puzzle.solution = true;
-    return true;
+    return puzzle.g == 0;
 }
 
 bool checkDupe(node &puzzle, set<vector<vector<int>>> &table){
@@ -93,12 +98,12 @@ node buildTree(vector<vector<int>> puzzle){
 
     queueCounter = 0;
     expandedCounter = 0;
-    queue<node> tree;
+    priority_queue<node, vector<node>, CompareG> tree;
     set<vector<vector<int>>> table;
     node temp;
 
     tree.push(buildNode(puzzle));
-    node puzzleTop = tree.front();
+    node puzzleTop = tree.top();
     if(checkComplete(puzzleTop)) return puzzleTop;
 
     int row;
@@ -106,7 +111,7 @@ node buildTree(vector<vector<int>> puzzle){
 
     while(!tree.empty()){
         if(queueCounter < tree.size()){queueCounter = tree.size();}
-        puzzleTop = tree.front();
+        puzzleTop = tree.top();
         tree.pop();
         expandedCounter++;
 
@@ -160,6 +165,7 @@ node buildTree(vector<vector<int>> puzzle){
 
 int main(int argc, char** argv){
     
+    auto startAll = high_resolution_clock::now();
     for(int i = 0; i < problems.size(); i++){
         vector<vector<int>> problem;
         for(int k = 0; k < 3; k++){
@@ -173,7 +179,8 @@ int main(int argc, char** argv){
         auto start = high_resolution_clock::now();
         node sol = buildTree(problem);
         auto stop = high_resolution_clock::now();
-        if(sol.solution){
+        
+        if(!sol.g){
             cout << "\nSolution:" << endl;
             cout << "Depth: " << sol.path.size() << endl;
             cout << "Path: ";
@@ -185,9 +192,13 @@ int main(int argc, char** argv){
             cout << "Time: " << duration_cast<milliseconds>(stop - start).count() << " milliseconds" << endl;
             cout << endl;
         }else{
-            cout << "No Solution" << endl;
+            cout << "\nNo Solution" << endl;
         }
     }
+    auto stopAll = high_resolution_clock::now();
+
+    cout << "=======================================================" << endl;
+    cout << "Time to run all " << problems.size() << " tests: " << duration_cast<milliseconds>(stopAll - startAll).count() << " milliseconds" << endl;
 
     return 0;
 }

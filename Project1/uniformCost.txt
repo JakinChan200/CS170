@@ -1,0 +1,103 @@
+=================================================
+
+1 2 3 
+4 5 6 
+7 8 0 
+
+Solution:
+Depth: 0
+Path:
+Max Queue Length: 0
+Nodes Expanded: 0
+Time: 0 milliseconds
+
+=================================================
+
+1 2 3
+4 5 6
+0 7 8
+
+Solution:
+Depth: 2
+Path: right right
+Max Queue Length: 4
+Nodes Expanded: 3
+Time: 0 milliseconds
+
+=================================================
+
+1 2 3
+5 0 6
+4 7 8
+
+Solution:
+Depth: 4
+Path: left down right right
+Max Queue Length: 13
+Nodes Expanded: 20
+Time: 0 milliseconds
+
+=================================================
+
+1 3 6
+5 0 2
+4 7 8
+
+Solution:
+Depth: 8
+Path: right up left down left down right right
+Max Queue Length: 124
+Nodes Expanded: 188
+Time: 2 milliseconds
+
+=================================================
+
+1 3 6
+5 0 7
+4 8 2
+
+Solution:
+Depth: 12
+Path: right down left up right up left down left down right right
+Max Queue Length: 935
+Nodes Expanded: 1394
+Time: 32 milliseconds
+
+=================================================
+
+1 6 7
+5 0 3
+4 8 2
+
+Solution:
+Depth: 16
+Path: right up left down right down left up right up left down left down right right
+Max Queue Length: 5089
+Nodes Expanded: 8622
+Time: 225 milliseconds
+
+=================================================
+
+7 1 2
+4 8 5
+6 3 0
+
+Solution:
+Depth: 20
+Path: left left up right right down left left up up right down down left up right up right down down
+Max Queue Length: 16939
+Nodes Expanded: 37728
+Time: 1211 milliseconds
+
+=================================================
+
+0 7 2
+4 6 1
+3 5 8
+
+Solution:
+Depth: 24
+Path: right down left down right up right up left down left up right down down left up right right up left down down right
+Max Queue Length: 23973
+Nodes Expanded: 111591
+Time: 3698 milliseconds
