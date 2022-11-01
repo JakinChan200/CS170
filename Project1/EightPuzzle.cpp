@@ -2,7 +2,7 @@
 #include <iostream>
 #include <queue>
 #include <string>
-
+#include <set>
 
 using namespace std;
 
@@ -15,13 +15,10 @@ vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 7, 8, 0}, //0
                                 {7, 1, 2, 4, 8, 5, 6, 3, 0}, //20
                                 {0, 7, 2, 4, 6, 1, 3, 5, 8}}; //24
 
-//vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 0, 7, 8}};
-
 struct node{
     vector<vector<int>> state;
     int zeroRow;
     int zeroCol;
-    int depth = 0;
     vector<string> path;
     bool solution = false;
 };
@@ -49,23 +46,10 @@ bool checkComplete(node &puzzle){
     return true;
 }
 
-bool checkDuplicate(node &puzzle, vector<vector<int>> &table){
-    int temp = 0;
-    int firstDigit = puzzle.state[0][0];
-    for(int i = 0; i < puzzle.state.size(); i++){
-        for(int k = 0; k < puzzle.state[i].size(); k++){
-            temp *= 10;
-            temp += puzzle.state[i][k];
-        }
-    }
-
-    for(int i = 0; i < table[firstDigit].size(); i++){
-        if(temp == table[firstDigit][i]){
-            return true;
-        }
-    }
-    table[firstDigit].push_back(temp);
-    return false;
+bool checkDupe(node &puzzle, set<vector<vector<int>>> &table){
+    int initialSize = table.size();
+    table.insert(puzzle.state);
+    return initialSize == table.size();
 }
 
 node swapValues(node puzzle, int tileRow, int tileCol, string step){
@@ -73,7 +57,6 @@ node swapValues(node puzzle, int tileRow, int tileCol, string step){
     puzzle.state[tileRow][tileCol] = 0;
     puzzle.zeroRow = tileRow;
     puzzle.zeroCol = tileCol;
-    puzzle.depth++;
     puzzle.path.push_back(step);
     return puzzle;
 }
@@ -87,6 +70,7 @@ node buildNode(vector<vector<int>> state){
             if(state[i][k] == 0){
                 temp.zeroRow = i;
                 temp.zeroCol = k;
+                return temp;
             }
         }
     }
@@ -99,10 +83,9 @@ node buildTree(vector<vector<int>> puzzle){
     tree.push(buildNode(puzzle));
     node puzzleTop = tree.front();
     node temp;
-    vector<vector<int>> table(puzzle.size()*puzzle[0].size(), vector<int>(0));
+    set<vector<vector<int>>> table;
     if(checkComplete(puzzleTop)) return puzzleTop;
-    checkDuplicate(puzzleTop, table);
-    
+
     int row;
     int col;
 
@@ -115,7 +98,7 @@ node buildTree(vector<vector<int>> puzzle){
 
         if(row != 0){
             temp = swapValues(puzzleTop, row-1, col, "up");
-            if(!checkDuplicate(temp, table)){
+            if(!checkDupe(temp, table)){
                 if(checkComplete(tree.back())){
                     return tree.back();
                 }else{
@@ -125,7 +108,7 @@ node buildTree(vector<vector<int>> puzzle){
         }
         if(row != puzzle.size()-1){
             temp = swapValues(puzzleTop, row+1, col, "down");
-            if(!checkDuplicate(temp, table)){
+            if(!checkDupe(temp, table)){
                 if(checkComplete(tree.back())){
                     return tree.back();
                 }else{
@@ -136,7 +119,7 @@ node buildTree(vector<vector<int>> puzzle){
 
         if(col != 0){
             temp = swapValues(puzzleTop, row, col-1, "left");
-            if(!checkDuplicate(temp, table)){
+            if(!checkDupe(temp, table)){
                 if(checkComplete(tree.back())){
                     return tree.back();
                 }else{
@@ -146,7 +129,7 @@ node buildTree(vector<vector<int>> puzzle){
         }
         if(col != puzzle[row].size()-1){
             temp = swapValues(puzzleTop, row, col+1, "right");
-            if(!checkDuplicate(temp, table)){
+            if(!checkDupe(temp, table)){
                 if(checkComplete(tree.back())){
                     return tree.back();
                 }else{
@@ -173,7 +156,7 @@ int main(int argc, char** argv){
         node sol = buildTree(problem);
         if(sol.solution){
             cout << "\nSolution:" << endl;
-            cout << "Depth: " << sol.depth << endl;
+            cout << "Depth: " << sol.path.size() << endl;
             cout << "Path: ";
             for(int k = 0; k < sol.path.size(); k++){
                 cout << sol.path[k] << " ";
