@@ -33,8 +33,8 @@ Time: 0 milliseconds
 Solution:
 Depth: 4
 Path: left down right right
-Max Queue Length: 7
-Nodes Expanded: 6
+Max Queue Length: 6
+Nodes Expanded: 4
 Time: 0 milliseconds
 
 =================================================
@@ -46,8 +46,8 @@ Time: 0 milliseconds
 Solution:
 Depth: 8
 Path: right up left down left down right right
-Max Queue Length: 16
-Nodes Expanded: 19
+Max Queue Length: 12
+Nodes Expanded: 12
 Time: 0 milliseconds
 
 =================================================
@@ -59,8 +59,8 @@ Time: 0 milliseconds
 Solution:
 Depth: 12
 Path: right down left up right up left down left down right right
-Max Queue Length: 24
-Nodes Expanded: 33
+Max Queue Length: 27
+Nodes Expanded: 37
 Time: 0 milliseconds
 
 =================================================
@@ -70,11 +70,11 @@ Time: 0 milliseconds
 4 8 2
 
 Solution:
-Depth: 18
-Path: up right down left up right down down left up right up left down left down right right 
-Max Queue Length: 165
-Nodes Expanded: 256
-Time: 6 milliseconds
+Depth: 16
+Path: right up left down right down left up right up left down left down right right 
+Max Queue Length: 62
+Nodes Expanded: 96
+Time: 1 milliseconds
 
 =================================================
 
@@ -84,10 +84,10 @@ Time: 6 milliseconds
 
 Solution:
 Depth: 20
-Path: left left up right right down left left up up right right down left down left up right right down
-Max Queue Length: 265
-Nodes Expanded: 417
-Time: 11 milliseconds
+Path: left left up right right down left left up up right down down left up right up right down down
+Max Queue Length: 305
+Nodes Expanded: 503
+Time: 12 milliseconds
 
 =================================================
 
@@ -96,11 +96,11 @@ Time: 11 milliseconds
 3 5 8
 
 Solution:
-Depth: 26
-Path: right down left up right down right down left left up right up left down right down right up left up right down left down right
-Max Queue Length: 2479
-Nodes Expanded: 4421
-Time: 133 milliseconds
+Depth: 24
+Path: right down right up left down left down right up left up right down down left up right right up left down down right
+Max Queue Length: 966
+Nodes Expanded: 1758
+Time: 48 milliseconds
 
 =======================================================
-Time to run all 8 tests: 178 milliseconds
+Time to run all 8 tests: 89 milliseconds

@@ -34,7 +34,8 @@ struct node{
 
 struct Compare{
     bool operator()(node &a, node &b){
-        return a.h + a.path.size() > b.h + b.path.size();
+        //return a.h + a.path.size() != b.h + b.path.size() ? a.h + a.path.size() > b.h + b.path.size() : a.path.size() > b.path.size(); 
+        //return a.h != b.h ? a.h > b.h : a.path.size() > b.path.size(); //Use this for 2-3x+ speed, but <2x depth
     }
 };
 
@@ -59,15 +60,13 @@ bool checkComplete(node &puzzle, int algo){
                     case 3:
                         if(puzzle.state[i][k] > 0){
                             puzzle.h += abs(i - (int)(((double)puzzle.state[i][k]-1)/(puzzle.state.size()))) + abs(k - (int)((puzzle.state[i][k]-1)%puzzle.state[i].size()));
-                        }else{
-                            puzzle.h += abs((int)puzzle.state.size()-1-i) + abs((int)puzzle.state[i].size()-1-k);
                         }
                         break;
-                    case 1:
-                        return false;
+                    case 2:
+                        puzzle.h++;
                         break;
                     default:
-                        puzzle.h++;
+                        return false;
                         break;
                 }
             }
@@ -126,10 +125,6 @@ node buildTree(vector<vector<int>> puzzle, int algo){
         if(queueCounter < tree.size()){queueCounter = tree.size();}
         puzzleTop = tree.top();
         tree.pop();
-        // if(puzzleTop.state == problems1 || puzzleTop.state == problems2){
-        //     printPuzzle(puzzleTop.state);
-        //     cout << "h: " << puzzleTop.h << " g: " << puzzleTop.path.size() << endl;
-        // }
         expandedCounter++;
 
         row = puzzleTop.zeroRow;
