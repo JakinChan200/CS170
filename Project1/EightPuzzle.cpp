@@ -34,7 +34,7 @@ struct node{
 
 struct Compare{
     bool operator()(node &a, node &b){
-        //return a.h + a.path.size() != b.h + b.path.size() ? a.h + a.path.size() > b.h + b.path.size() : a.path.size() > b.path.size(); 
+        return a.h + a.path.size() != b.h + b.path.size() ? a.h + a.path.size() > b.h + b.path.size() : a.path.size() > b.path.size(); 
         //return a.h != b.h ? a.h > b.h : a.path.size() > b.path.size(); //Use this for 2-3x+ speed, but <2x depth
     }
 };
