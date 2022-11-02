@@ -19,19 +19,19 @@ vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 7, 8, 0}, //0
                                 {7, 1, 2, 4, 8, 5, 6, 3, 0}, //20
                                 {0, 7, 2, 4, 6, 1, 3, 5, 8}}; //24
 
-// vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 0, 7, 8}};
+//vector<vector<int>> problems = {{1, 0, 3, 2, 4, 5, 6, 7, 8}};
 
 struct node{
     vector<vector<int>> state;
     int zeroRow;
     int zeroCol;
-    int g = 0;
+    int h = 0;
     vector<string> path;
 };
 
-struct CompareG{
+struct CompareM{
     bool operator()(node &a, node &b){
-        return a.g > b.g;
+        return a.h + a.path.size() > b.h + b.path.size();
     }
 };
 
@@ -46,17 +46,27 @@ void printPuzzle(vector<vector<int>> problem){
     return;
 }
 
-bool checkComplete(node &puzzle){
+bool checkComplete(node &puzzle, int algo){
     int dimension = puzzle.state.size() * puzzle.state[0].size();
-    puzzle.g = 0;
+    puzzle.h = 0;
     for(int i = 0; i < puzzle.state.size(); i++){
         for(int k = 0; k < puzzle.state[i].size(); k++){
             if(!(((3*i+k+1) %dimension) == puzzle.state[i][k])){
-                puzzle.g++;
+                if(algo == 3){
+                    if(puzzle.state[i][k] > 0){
+                        puzzle.h += abs(i - (int)(((double)puzzle.state[i][k]-1)/(puzzle.state.size()))) + abs(k - (int)((puzzle.state[i][k]-1)%puzzle.state[i].size()));
+                    }else{
+                        puzzle.h += abs(i - (int)puzzle.state.size()-1) + abs(k - (int)puzzle.state[i].size()-1);
+                    }
+                }else if(algo == 1){
+                    return false;
+                }else{
+                    puzzle.h++;
+                }
             }
         }
     }
-    return puzzle.g == 0;
+    return puzzle.h == 0;
 }
 
 bool checkDupe(node &puzzle, set<vector<vector<int>>> &table){
@@ -77,7 +87,6 @@ node swapValues(node puzzle, int tileRow, int tileCol, string step){
 node buildNode(vector<vector<int>> state){
     node temp;
     temp.state = state;
-    int dimension = state.size() * state[0].size();
 
     for(int i = 0; i < state.size(); i++){
         for(int k = 0; k < state[i].size(); k++){
@@ -86,25 +95,22 @@ node buildNode(vector<vector<int>> state){
                 temp.zeroCol = k;
                 return temp;
             }
-            if(!(((3*i+k+1) %dimension) == state[i][k])){
-                temp.g++;
-            }
         }
     }
     return temp;
 }
 
-node buildTree(vector<vector<int>> puzzle){
+node buildTree(vector<vector<int>> puzzle, int algo){
 
     queueCounter = 0;
     expandedCounter = 0;
-    priority_queue<node, vector<node>, CompareG> tree;
+    priority_queue<node, vector<node>, CompareM> tree;
     set<vector<vector<int>>> table;
     node temp;
 
     tree.push(buildNode(puzzle));
     node puzzleTop = tree.top();
-    if(checkComplete(puzzleTop)) return puzzleTop;
+    if(checkComplete(puzzleTop, algo)) return puzzleTop;
 
     int row;
     int col;
@@ -121,7 +127,7 @@ node buildTree(vector<vector<int>> puzzle){
         if(row != 0){
             temp = swapValues(puzzleTop, row-1, col, "up");
             if(!checkDupe(temp, table)){
-                if(checkComplete(temp)){
+                if(checkComplete(temp, algo)){
                     return temp;
                 }else{
                     tree.push(temp);
@@ -131,7 +137,7 @@ node buildTree(vector<vector<int>> puzzle){
         if(row != puzzle.size()-1){
             temp = swapValues(puzzleTop, row+1, col, "down");
             if(!checkDupe(temp, table)){
-                if(checkComplete(temp)){
+                if(checkComplete(temp, algo)){
                     return temp;
                 }else{
                     tree.push(temp);
@@ -142,7 +148,7 @@ node buildTree(vector<vector<int>> puzzle){
         if(col != 0){
             temp = swapValues(puzzleTop, row, col-1, "left");
             if(!checkDupe(temp, table)){
-                if(checkComplete(temp)){
+                if(checkComplete(temp, algo)){
                     return temp;
                 }else{
                     tree.push(temp);
@@ -152,7 +158,7 @@ node buildTree(vector<vector<int>> puzzle){
         if(col != puzzle[row].size()-1){
             temp = swapValues(puzzleTop, row, col+1, "right");
             if(!checkDupe(temp, table)){
-                if(checkComplete(temp)){
+                if(checkComplete(temp, algo)){
                     return temp;
                 }else{
                     tree.push(temp);
@@ -165,6 +171,13 @@ node buildTree(vector<vector<int>> puzzle){
 
 int main(int argc, char** argv){
     
+    int algo = 0;
+
+    while(algo < 1 || algo > 3){
+        cout << "1: for uniform \n2: for A* misplaced tile heuristic \n3: for A* manhattan distance" << endl;
+        cin >> algo;
+    }
+
     auto startAll = high_resolution_clock::now();
     for(int i = 0; i < problems.size(); i++){
         vector<vector<int>> problem;
@@ -177,10 +190,10 @@ int main(int argc, char** argv){
 
         printPuzzle(problem);
         auto start = high_resolution_clock::now();
-        node sol = buildTree(problem);
+        node sol = buildTree(problem, algo);
         auto stop = high_resolution_clock::now();
         
-        if(!sol.g){
+        if(checkComplete(sol, algo)){ //!sol.h
             cout << "\nSolution:" << endl;
             cout << "Depth: " << sol.path.size() << endl;
             cout << "Path: ";
