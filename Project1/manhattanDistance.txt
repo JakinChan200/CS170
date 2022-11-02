@@ -46,8 +46,8 @@ Time: 0 milliseconds
 Solution:
 Depth: 8
 Path: right up left down left down right right
-Max Queue Length: 14
-Nodes Expanded: 16
+Max Queue Length: 16
+Nodes Expanded: 19
 Time: 0 milliseconds
 
 =================================================
@@ -59,8 +59,8 @@ Time: 0 milliseconds
 Solution:
 Depth: 12
 Path: right down left up right up left down left down right right
-Max Queue Length: 28
-Nodes Expanded: 40
+Max Queue Length: 24
+Nodes Expanded: 33
 Time: 0 milliseconds
 
 =================================================
@@ -71,10 +71,10 @@ Time: 0 milliseconds
 
 Solution:
 Depth: 18
-Path: up right down left up right down down left up right up left down left down right right
-Max Queue Length: 162
+Path: up right down left up right down down left up right up left down left down right right 
+Max Queue Length: 165
 Nodes Expanded: 256
-Time: 5 milliseconds
+Time: 6 milliseconds
 
 =================================================
 
@@ -85,8 +85,8 @@ Time: 5 milliseconds
 Solution:
 Depth: 20
 Path: left left up right right down left left up up right right down left down left up right right down
-Max Queue Length: 263
-Nodes Expanded: 414
+Max Queue Length: 265
+Nodes Expanded: 417
 Time: 11 milliseconds
 
 =================================================
@@ -97,10 +97,10 @@ Time: 11 milliseconds
 
 Solution:
 Depth: 26
-Path: right down left up right down right down left left up up right down down right up left left up right right down left down right
-Max Queue Length: 3040
-Nodes Expanded: 5639
-Time: 172 milliseconds
+Path: right down left up right down right down left left up right up left down right down right up left up right down left down right
+Max Queue Length: 2479
+Nodes Expanded: 4421
+Time: 133 milliseconds
 
 =======================================================
-Time to run all 8 tests: 219 milliseconds
+Time to run all 8 tests: 178 milliseconds

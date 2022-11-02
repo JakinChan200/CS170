@@ -19,7 +19,10 @@ vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 7, 8, 0}, //0
                                 {7, 1, 2, 4, 8, 5, 6, 3, 0}, //20
                                 {0, 7, 2, 4, 6, 1, 3, 5, 8}}; //24
 
-//vector<vector<int>> problems = {{1, 0, 3, 2, 4, 5, 6, 7, 8}};
+//vector<vector<int>> problems = {{7, 6, 2, 0, 4, 1, 3, 5, 8}};
+// vector<vector<int>> problems = {{0, 7, 2, 4, 6, 1, 3, 5, 8}};
+// vector<vector<int>> problems1 = {{0, 6, 2}, {7, 4, 1}, {3, 5, 8}};
+// vector<vector<int>> problems2 = {{7, 6, 2}, {3, 4, 1}, {0, 5, 8}};
 
 struct node{
     vector<vector<int>> state;
@@ -29,7 +32,7 @@ struct node{
     vector<string> path;
 };
 
-struct CompareM{
+struct Compare{
     bool operator()(node &a, node &b){
         return a.h + a.path.size() > b.h + b.path.size();
     }
@@ -51,17 +54,21 @@ bool checkComplete(node &puzzle, int algo){
     puzzle.h = 0;
     for(int i = 0; i < puzzle.state.size(); i++){
         for(int k = 0; k < puzzle.state[i].size(); k++){
-            if(!(((3*i+k+1) %dimension) == puzzle.state[i][k])){
-                if(algo == 3){
-                    if(puzzle.state[i][k] > 0){
-                        puzzle.h += abs(i - (int)(((double)puzzle.state[i][k]-1)/(puzzle.state.size()))) + abs(k - (int)((puzzle.state[i][k]-1)%puzzle.state[i].size()));
-                    }else{
-                        puzzle.h += abs(i - (int)puzzle.state.size()-1) + abs(k - (int)puzzle.state[i].size()-1);
-                    }
-                }else if(algo == 1){
-                    return false;
-                }else{
-                    puzzle.h++;
+            if(!(((puzzle.state[i].size()*i+k+1) %dimension) == puzzle.state[i][k])){
+                switch (algo){
+                    case 3:
+                        if(puzzle.state[i][k] > 0){
+                            puzzle.h += abs(i - (int)(((double)puzzle.state[i][k]-1)/(puzzle.state.size()))) + abs(k - (int)((puzzle.state[i][k]-1)%puzzle.state[i].size()));
+                        }else{
+                            puzzle.h += abs((int)puzzle.state.size()-1-i) + abs((int)puzzle.state[i].size()-1-k);
+                        }
+                        break;
+                    case 1:
+                        return false;
+                        break;
+                    default:
+                        puzzle.h++;
+                        break;
                 }
             }
         }
@@ -104,7 +111,7 @@ node buildTree(vector<vector<int>> puzzle, int algo){
 
     queueCounter = 0;
     expandedCounter = 0;
-    priority_queue<node, vector<node>, CompareM> tree;
+    priority_queue<node, vector<node>, Compare> tree;
     set<vector<vector<int>>> table;
     node temp;
 
@@ -119,6 +126,10 @@ node buildTree(vector<vector<int>> puzzle, int algo){
         if(queueCounter < tree.size()){queueCounter = tree.size();}
         puzzleTop = tree.top();
         tree.pop();
+        // if(puzzleTop.state == problems1 || puzzleTop.state == problems2){
+        //     printPuzzle(puzzleTop.state);
+        //     cout << "h: " << puzzleTop.h << " g: " << puzzleTop.path.size() << endl;
+        // }
         expandedCounter++;
 
         row = puzzleTop.zeroRow;
