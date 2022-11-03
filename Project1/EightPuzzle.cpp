@@ -10,6 +10,13 @@ using namespace std::chrono;
 int queueCounter = 0;
 int expandedCounter = 0;
 
+//uncomment which problem sets you want to use, works for 2D vectors of problems and regular vectors
+//Does not currently work for non 3x3 puzzles due to
+/*
+    Lines: 206, 207
+    Maybe Line: 64
+*/
+
 vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 7, 8, 0}, //0
                                 {1, 2, 3, 4, 5, 6, 0, 7, 8}, //2
                                 {1, 2, 3, 5, 0, 6, 4, 7, 8}, //4
@@ -19,10 +26,8 @@ vector<vector<int>> problems = {{1, 2, 3, 4, 5, 6, 7, 8, 0}, //0
                                 {7, 1, 2, 4, 8, 5, 6, 3, 0}, //20
                                 {0, 7, 2, 4, 6, 1, 3, 5, 8}}; //24
 
-//vector<vector<int>> problems = {{7, 6, 2, 0, 4, 1, 3, 5, 8}};
-// vector<vector<int>> problems = {{0, 7, 2, 4, 6, 1, 3, 5, 8}};
-// vector<vector<int>> problems1 = {{0, 6, 2}, {7, 4, 1}, {3, 5, 8}};
-// vector<vector<int>> problems2 = {{7, 6, 2}, {3, 4, 1}, {0, 5, 8}};
+//vector<vector<int>> problems = {{1, 2, 3, 5, 0, 6, 4, 7, 8}}; //4
+//vector<vector<int>> problems = {{0, 7, 2, 4, 6, 1, 3, 5, 8}}; //24
 
 struct node{
     vector<vector<int>> state;
@@ -35,12 +40,12 @@ struct node{
 struct Compare{
     bool operator()(node &a, node &b){
         return a.h + a.path.size() != b.h + b.path.size() ? a.h + a.path.size() > b.h + b.path.size() : a.path.size() > b.path.size(); 
-        //return a.h != b.h ? a.h > b.h : a.path.size() > b.path.size(); //Use this for 2-3x+ speed, but <2x depth
+        //return a.h != b.h ? a.h > b.h : a.path.size() > b.path.size(); //Use this for 2-3x+ speed, but <2x depth on manhattan
     }
 };
 
+//Prints the puzzle state
 void printPuzzle(vector<vector<int>> problem){
-    cout << endl;
     for(int i = 0; i < problem.size(); i++){
         for(int k = 0; k < problem[i].size(); k++){
             cout << problem[i][k] << " ";
@@ -50,6 +55,7 @@ void printPuzzle(vector<vector<int>> problem){
     return;
 }
 
+//Updates h(n) and checks if the state passed in is the goal state
 bool checkComplete(node &puzzle, int algo){
     int dimension = puzzle.state.size() * puzzle.state[0].size();
     puzzle.h = 0;
@@ -63,7 +69,7 @@ bool checkComplete(node &puzzle, int algo){
                         }
                         break;
                     case 2:
-                        puzzle.h++;
+                        if(puzzle.state[i][k] != 0) puzzle.h++;
                         break;
                     default:
                         return false;
@@ -75,12 +81,14 @@ bool checkComplete(node &puzzle, int algo){
     return puzzle.h == 0;
 }
 
+//Check if the state passed in already exists
 bool checkDupe(node &puzzle, set<vector<vector<int>>> &table){
     int initialSize = table.size();
     table.insert(puzzle.state);
     return initialSize == table.size();
 }
 
+//Moves a tile
 node swapValues(node puzzle, int tileRow, int tileCol, string step){
     puzzle.state[puzzle.zeroRow][puzzle.zeroCol] = puzzle.state[tileRow][tileCol];
     puzzle.state[tileRow][tileCol] = 0;
@@ -90,6 +98,7 @@ node swapValues(node puzzle, int tileRow, int tileCol, string step){
     return puzzle;
 }
 
+//Changes a 2D vector of numbers into a node
 node buildNode(vector<vector<int>> state){
     node temp;
     temp.state = state;
@@ -106,6 +115,7 @@ node buildNode(vector<vector<int>> state){
     return temp;
 }
 
+//General algorithm
 node buildTree(vector<vector<int>> puzzle, int algo){
 
     queueCounter = 0;
@@ -126,6 +136,11 @@ node buildTree(vector<vector<int>> puzzle, int algo){
         puzzleTop = tree.top();
         tree.pop();
         expandedCounter++;
+
+    //uncomment to see traceback
+        // if(expandedCounter == 1){checkComplete(puzzleTop, algo);}
+        // cout << "The best state to expand with a g(n) = " << puzzleTop.path.size() << "  and h(n) = " << puzzleTop.h << " is..." << endl;
+        // printPuzzle(puzzleTop.state);
 
         row = puzzleTop.zeroRow;
         col = puzzleTop.zeroCol;
@@ -175,6 +190,7 @@ node buildTree(vector<vector<int>> puzzle, int algo){
     return puzzleTop;
 }
 
+//Main function for printing mostly, and calling buildTree
 int main(int argc, char** argv){
     
     int algo = 0;
@@ -192,7 +208,7 @@ int main(int argc, char** argv){
             problem.push_back(row);
         }
 
-        cout << "=================================================" << endl;
+        cout << "=================================================" << endl << endl;
 
         printPuzzle(problem);
         auto start = high_resolution_clock::now();
@@ -200,7 +216,7 @@ int main(int argc, char** argv){
         auto stop = high_resolution_clock::now();
         
         if(checkComplete(sol, algo)){ //!sol.h
-            cout << "\nSolution:" << endl;
+            cout << "\nGoal State!:" << endl;
             cout << "Depth: " << sol.path.size() << endl;
             cout << "Path: ";
             for(int k = 0; k < sol.path.size(); k++){
@@ -212,12 +228,15 @@ int main(int argc, char** argv){
             cout << endl;
         }else{
             cout << "\nNo Solution" << endl;
+            cout << "\nMax Queue Length: " << queueCounter << endl;
+            cout << "Nodes Expanded: " << expandedCounter << endl;
+            cout << "Time: " << duration_cast<milliseconds>(stop - start).count() << " milliseconds" << endl;
         }
     }
     auto stopAll = high_resolution_clock::now();
 
     cout << "=======================================================" << endl;
-    cout << "Time to run all " << problems.size() << " tests: " << duration_cast<milliseconds>(stopAll - startAll).count() << " milliseconds" << endl;
+    cout << "Time to run " << problems.size() << " tests: " << duration_cast<milliseconds>(stopAll - startAll).count() << " milliseconds" << endl;
 
     return 0;
 }
