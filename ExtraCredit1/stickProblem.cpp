@@ -3,13 +3,14 @@ Given a stick, split it in 2 random spots (the spots can be the same). What are 
 */
 
 #include <iostream>
-#include <math.h>
 #include <chrono>
 #include <vector>
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 
 using namespace std;
+using namespace std::chrono;
 
+//vector solution: 21 lines
 void ratioTriangle(){
     int count = 0;
     int iterations = 10000000;
@@ -32,6 +33,7 @@ void ratioTriangle(){
     return;
 }
 
+//No vector solution: 25 lines
 // void ratioTriangle(){
 //     int count = 0;
 //     int iterations = 100000000;
@@ -58,11 +60,17 @@ void ratioTriangle(){
 //     return;
 // }
 
+
 int main(int argc, char** argv){
     int timesToRun = 10;
 
+    auto startAll = high_resolution_clock::now();
     for(int i = 0; i < timesToRun; i++){
         ratioTriangle();
     }
+    auto stopAll = high_resolution_clock::now();
+
+    cout << "Time to run " << timesToRun << " tests: " << duration_cast<milliseconds>(stopAll - startAll).count() << " milliseconds" << endl;
+
     return 0;
 }
