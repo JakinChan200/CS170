@@ -2,16 +2,21 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <bits/stdc++.h>
 
 using namespace std;
+
+// 74 and 24
+double bestAccuracyOverall = 0;
+vector<int> bestFeaturesOverall;
 
 void readFile(vector<vector<double>> &data, string fileName){
     ifstream file;
     file.open(fileName);
 
-    if(!file.is_open()){
-        cout << "bruh";
-    }
+    // if(!file.is_open()){
+    //     cout << "bruh";
+    // }
     stringstream row();
     string curRow = "";
     double curValue = 0;
@@ -23,10 +28,81 @@ void readFile(vector<vector<double>> &data, string fileName){
             temp.push_back(curValue);
         }
         data.push_back(temp);
-        cout << "temp size " << temp.size() << endl;
     }
 
     file.close();
+}
+
+bool isDuplicate(const vector<int> &featureList, const int feature){
+    if(!featureList.size()) return false;
+    for(int i = 0; i < featureList.size(); i++){
+        if(feature == featureList[i]){
+            return true;
+        }
+    }
+    return false;
+}
+
+void printSet(const vector<int> &featureList){
+    cout << "{";
+    for(int i = 0; i < featureList.size(); i++){
+        cout << featureList[i];
+
+        if(i != featureList.size()-1){
+            cout << ", ";
+        }
+    }
+    cout << "}";
+}
+
+double accuracyTest(const vector<vector<double>> &data, vector<int> &current_set, int featureToAdd){
+    int numCorrectlyClassified = 0;
+    
+    for(int i = 0; i < data.size(); i++){
+        for(int j = 0; j < data.size(); j++){
+
+        }
+    }
+    return rand()%100;
+}
+
+void search(const vector<vector<double>> &data){
+    vector<int> currentFeatures;
+    bool isCurMaxima = false;
+
+    cout << "Dataset has " << data[0].size()-1 << " features (not including the class attribute), with " << data.size() << " instances." << endl; 
+    for(int i = 1; i < data[i].size(); i++){
+        cout << "\nOn the " << i << "th level of the search tree" << endl;
+        int featureToAdd;
+        double bestAccuracy = 0;
+
+        for(int j = 1; j < data[j].size(); j++){
+            if(isDuplicate(currentFeatures,j)) continue;
+
+            double accuracy = accuracyTest(data, currentFeatures, j+1);
+            cout << "--Using feature(s) ";
+            printSet(currentFeatures);
+            cout << " while considering " << j << " gives an accuracy of " << accuracy << "\%." << endl;
+            if(accuracy > bestAccuracy){
+                bestAccuracy = accuracy;
+                featureToAdd = j;
+                if(bestAccuracy > bestAccuracyOverall){
+                    bestAccuracyOverall = bestAccuracy;
+                    isCurMaxima = true;
+                }
+            }
+        }
+        currentFeatures.push_back(featureToAdd);
+        sort(currentFeatures.begin(), currentFeatures.end());
+
+        if(isCurMaxima){
+            bestFeaturesOverall = currentFeatures;
+            isCurMaxima = false;
+        }
+        cout << "Feature set ";
+        printSet(currentFeatures);
+        cout << " was the best, with an accuracy of " << bestAccuracy << "\%." << endl;
+    }
 }
 
 int main(int argc, char** argv){    
@@ -67,14 +143,10 @@ int main(int argc, char** argv){
     vector<vector<double>> data(0, vector<double>(0, 0));
     readFile(data, fileName);
 
-    cout << data.size() << endl;
-    cout << data[0].size() << endl;
+    search(data);
 
-    // for(int i = 0; i < data.size(); i++){
-    //     for(int j = 0; j < data[0].size(); j++){
-    //         cout << "i: " << i << " j: " << j << " " << data[i][j] << endl;
-    //     }
-    //     cout << endl;
-    // }
+    cout << "\nThe best features are ";
+    printSet(bestFeaturesOverall);
+    cout << " with an accuracy of " << bestAccuracyOverall << "\%." << endl;
     return 0;
 }
