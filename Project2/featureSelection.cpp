@@ -2,6 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <limits>
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -14,9 +15,6 @@ void readFile(vector<vector<double>> &data, string fileName){
     ifstream file;
     file.open(fileName);
 
-    // if(!file.is_open()){
-    //     cout << "bruh";
-    // }
     stringstream row();
     string curRow = "";
     double curValue = 0;
@@ -47,7 +45,6 @@ void printSet(const vector<int> &featureList){
     cout << "{";
     for(int i = 0; i < featureList.size(); i++){
         cout << featureList[i];
-
         if(i != featureList.size()-1){
             cout << ", ";
         }
@@ -57,13 +54,32 @@ void printSet(const vector<int> &featureList){
 
 double accuracyTest(const vector<vector<double>> &data, vector<int> &current_set, int featureToAdd){
     int numCorrectlyClassified = 0;
-    
+    //double nearestNeighborLabel;
+    double distance;
     for(int i = 0; i < data.size(); i++){
+        double nearestNeighborDistance = numeric_limits<double>::max();
+        int nearestNeighborindex = numeric_limits<int>::max();
         for(int j = 0; j < data.size(); j++){
-
+            distance = 0;
+            if(j != i){
+                for(int k = 0; k < current_set.size(); k++){
+                    distance += pow(data[i][current_set[k]] - data[j][current_set[k]], 2);
+                }
+                distance += pow(data[i][featureToAdd] - data[j][featureToAdd], 2);
+                distance = sqrt(distance);
+                
+                if(distance < nearestNeighborDistance){
+                    nearestNeighborDistance = distance;
+                    nearestNeighborindex = j;
+                    //nearestNeighborLabel = data[j][0];
+                }
+            }
+        }
+        if(data[i][0] == data[nearestNeighborindex][0]){
+            numCorrectlyClassified++;
         }
     }
-    return rand()%100;
+    return (double)numCorrectlyClassified/data.size() * 100;
 }
 
 void search(const vector<vector<double>> &data){
@@ -79,7 +95,7 @@ void search(const vector<vector<double>> &data){
         for(int j = 1; j < data[j].size(); j++){
             if(isDuplicate(currentFeatures,j)) continue;
 
-            double accuracy = accuracyTest(data, currentFeatures, j+1);
+            double accuracy = accuracyTest(data, currentFeatures, j); //+1
             cout << "--Using feature(s) ";
             printSet(currentFeatures);
             cout << " while considering " << j << " gives an accuracy of " << accuracy << "\%." << endl;
