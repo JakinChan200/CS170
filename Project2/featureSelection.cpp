@@ -71,7 +71,7 @@ void populateVector(vector<int> &features, int size){
     }
 }
 
-double accuracyTest(const vector<vector<double>> &data, vector<int> &current_set, int featureToAdd){
+double accuracyTest(const vector<vector<double>> &data, vector<int> &current_set){
     int numCorrectlyClassified = 0;
     double distance;
     for(int i = 0; i < data.size(); i++){
@@ -83,7 +83,7 @@ double accuracyTest(const vector<vector<double>> &data, vector<int> &current_set
                 for(int k = 0; k < current_set.size(); k++){
                     distance += pow(data[i][current_set[k]] - data[j][current_set[k]], 2);
                 }
-                distance += pow(data[i][featureToAdd] - data[j][featureToAdd], 2);
+                //distance += pow(data[i][featureToAdd] - data[j][featureToAdd], 2);
                 distance = sqrt(distance);
 
                 if(distance < nearestNeighborDistance){
@@ -108,11 +108,16 @@ void search(const vector<vector<double>> &data){
         cout << "\nOn the " << i << "th level of the search tree" << endl;
         int featureToAdd;
         double bestAccuracy = 0;
+        vector<int> featureAdded;
 
         for(int j = 1; j < data[j].size(); j++){
             if(isDuplicate(currentFeatures, j)) continue;
 
-            double accuracy = accuracyTest(data, currentFeatures, j); //+1
+            featureAdded = currentFeatures;
+            featureAdded.push_back(j);
+            sort(featureAdded.begin(), featureAdded.end());
+            
+            double accuracy = accuracyTest(data, featureAdded); //+1 j
             cout << "--Using feature(s) ";
             printSet(currentFeatures);
             cout << " while considering " << j << " gives an accuracy of " << accuracy << "\%." << endl;
@@ -154,7 +159,7 @@ void search2(const vector<vector<double>> &data){
             if(!isDuplicate(currentFeatures, j)) continue;
             
             removeElement(tempFeatures, currentFeatures, j);
-            double accuracy = accuracyTest(data, tempFeatures, j);
+            double accuracy = accuracyTest(data, tempFeatures);
 
             cout << "--Using feature(s) ";
             printSet(tempFeatures);
