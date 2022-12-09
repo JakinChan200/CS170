@@ -13,6 +13,7 @@ using namespace std::chrono;
 // 74 and 24
 double bestAccuracyOverall = 0;
 vector<int> bestFeaturesOverall;
+auto anchor = high_resolution_clock::now();
 
 void readFile(vector<vector<double>> &data, string fileName){
     ifstream file;
@@ -140,6 +141,10 @@ void search(const vector<vector<double>> &data){
         cout << "Feature set ";
         printSet(currentFeatures);
         cout << " was the best, with an accuracy of " << bestAccuracy << "\%." << endl;
+
+        auto checkpoint = high_resolution_clock::now();
+        cout << "The time to run this level was " << duration_cast<milliseconds>(checkpoint - anchor).count() << " milliseconds " << endl;
+        anchor = checkpoint;
     }
 }
 
@@ -183,6 +188,10 @@ void search2(const vector<vector<double>> &data){
         cout << "Feature set ";
         printSet(currentFeatures);
         cout << " was the best, with an accuracy of " << bestAccuracy << "\%." << endl;
+
+        auto checkpoint = high_resolution_clock::now();
+        cout << "The time to run this level was " << duration_cast<milliseconds>(checkpoint - anchor).count() << " milliseconds " << endl;
+        anchor = checkpoint;
     }
 }
 
@@ -236,6 +245,7 @@ int main(int argc, char** argv){
     readFile(data, fileName);
 
     auto start = high_resolution_clock::now();
+    anchor = high_resolution_clock::now();
     if(searchType == 1){
         search(data);
     }else{
@@ -247,6 +257,7 @@ int main(int argc, char** argv){
     printSet(bestFeaturesOverall);
     cout << " with an accuracy of " << bestAccuracyOverall << "\%." << endl;
 
+    cout << "Time: " << duration_cast<milliseconds>(stop - start).count() << " milliseconds  " << endl;
     cout << "Time: " << duration_cast<seconds>(stop - start).count() << " seconds  " << endl;
 
     return 0;
