@@ -1,0 +1,60 @@
+Welcome to Jakin Chan Feature Selection Algorithm
+Large or small file? ('l' or 's'):
+s
+What is the file number? (1 - 125): 
+74
+datasets/CS170_Small_Data__74.txt
+Would you like to run:
+        1: Forward Selection     
+        2: Backwards Elimination 
+2
+Dataset has 6 features (not including the class attribute), with 500 instances.
+
+On the 1th level of the search tree
+--Using feature(s) {2, 3, 4, 5, 6} after removing 1 gives an accuracy of 82.8%.
+--Using feature(s) {1, 3, 4, 5, 6} after removing 2 gives an accuracy of 84.6%.
+--Using feature(s) {1, 2, 4, 5, 6} after removing 3 gives an accuracy of 71%.
+--Using feature(s) {1, 2, 3, 5, 6} after removing 4 gives an accuracy of 84.6%.
+--Using feature(s) {1, 2, 3, 4, 6} after removing 5 gives an accuracy of 86%.
+--Using feature(s) {1, 2, 3, 4, 5} after removing 6 gives an accuracy of 75.4%.
+Feature set {1, 2, 3, 4, 6} was the best, with an accuracy of 86%.
+The time to run this level was 602 milliseconds
+
+On the 2th level of the search tree
+--Using feature(s) {2, 3, 4, 6} after removing 1 gives an accuracy of 88%.
+--Using feature(s) {1, 3, 4, 6} after removing 2 gives an accuracy of 89.8%.
+--Using feature(s) {1, 2, 4, 6} after removing 3 gives an accuracy of 70.4%.
+--Using feature(s) {1, 2, 3, 6} after removing 4 gives an accuracy of 90.4%.
+--Using feature(s) {1, 2, 3, 4} after removing 6 gives an accuracy of 77.8%.
+Feature set {1, 2, 3, 6} was the best, with an accuracy of 90.4%.
+The time to run this level was 415 milliseconds
+
+On the 3th level of the search tree
+--Using feature(s) {2, 3, 6} after removing 1 gives an accuracy of 92.8%.
+--Using feature(s) {1, 3, 6} after removing 2 gives an accuracy of 94.2%.
+--Using feature(s) {1, 2, 6} after removing 3 gives an accuracy of 72.4%.
+--Using feature(s) {1, 2, 3} after removing 6 gives an accuracy of 78.8%.
+Feature set {1, 3, 6} was the best, with an accuracy of 94.2%.
+The time to run this level was 257 milliseconds
+
+On the 4th level of the search tree
+--Using feature(s) {3, 6} after removing 1 gives an accuracy of 95%.
+--Using feature(s) {1, 6} after removing 3 gives an accuracy of 72.6%.
+--Using feature(s) {1, 3} after removing 6 gives an accuracy of 81.6%.
+Feature set {3, 6} was the best, with an accuracy of 95%.
+The time to run this level was 140 milliseconds
+
+On the 5th level of the search tree
+--Using feature(s) {6} after removing 3 gives an accuracy of 70.6%.
+--Using feature(s) {3} after removing 6 gives an accuracy of 86.4%.
+Feature set {3} was the best, with an accuracy of 86.4%.
+The time to run this level was 56 milliseconds
+
+On the 6th level of the search tree
+--Using feature(s) {} after removing 3 gives an accuracy of 79.2%.
+Feature set {} was the best, with an accuracy of 79.2%.
+The time to run this level was 8 milliseconds
+
+The best features are {3, 6} with an accuracy of 95%.
+Time: 1480 milliseconds
+Time: 1 seconds
